@@ -2,3 +2,5 @@
 logs/scheduler/2021-07-25/user_s3_to_redshift.py.log
 logs/scheduler/2021-07-25/user_s3_to_redshift.py.log
 *.log
+*.iml
+*.xml
