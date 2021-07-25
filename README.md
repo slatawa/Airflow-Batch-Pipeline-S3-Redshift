@@ -26,8 +26,7 @@ All this data needs to be processed using a data pipeline to answer the followin
 2. Produce, for each date, the **total number of valid searches** that existed on that date.
 3. Produce, for each date, the **total number of users** who had valid searches on that date.
 4. Given this data, determine which is the **most engaging search.**
-5. What would the email traffic look like if the definition of a valid search is changed from **3 clicks to 2 clicks**?
-6. Report any interesting **trends over the timespan** of the data available.
+5. Report any interesting **trends over the timespan** of the data available.
 
 
 **Data Pipeline design**:
@@ -154,15 +153,15 @@ Next, create the following connections:
 **Destination S3 datasets and Redshift Table**:
 After each successful run of the DAG, two files are stored in the destination bucket:
 * `s3://user-incoming-bucket/user-data-clean/session_user_data<yyyymmdd>.csv`: Contains a dataset with the following fields:
-    * user_id: Unique id of the user
-    * user_data: User Search Data
-    * valid_search_data: Eligible Search Data
-    * num_eligible_searches: Number of Eligible searches
-    * avg_listings: Avg number of listings for that user
-    * type_of_search: Did the user search for:
-        * num_rental_search_type
-        * num_sale_search_type
-        * none_search_type
+    * user_id: Unique id of the user *
+    * user_data: User Search Data *
+    * valid_search_data: Eligible Search Data *
+    * num_eligible_searches: Number of Eligible searches *
+    * avg_listings: Avg number of listings for that user *
+    * type_of_search: Did the user search for: *
+        * num_rental_search_type *
+        * num_sale_search_type *
+        * none_search_type *
 
 
 
@@ -180,3 +179,97 @@ After each successful run of the DAG, two files are stored in the destination bu
 Below shows snapshot of redshift table `search_stats` after completion of data pipeline
 
 ![img.png](./images/redshift-table-data.png)
+
+
+## Business question
+Above we have got our data-pipeline process in place to get data extracted and ready to be inferred in 
+a redshift table. I am going to extract the data from my Jupyter notebook and do some plotting 
+to analyze if any specific pattern emerge from the user search session data.
+
+The below code snippets are taken from jupyte notbook placed under the `notebook` folder 
+under in this repo
+
+1) Load data from redshift into pandas dataframe
+
+```
+import boto3
+import psycopg2
+import pandas as pd
+client = boto3.client(service_name='redshift',
+                      region_name='ap-south-1')
+
+conn = psycopg2.connect(host = 'xyz',
+                port = '5439',
+                user = 'awsuser',
+                password = 'xyz',
+                database = 'dev'
+                )
+
+cursor = conn.cursor()
+cursor.execute("select * from public.search_stats order by day")
+results = cursor.fetchall()
+df = pd.DataFrame(results)
+
+df.columns = ['day','num_users','num_searches','num_rental_searches','num_sale_searches','num_none_searches']
+ 
+```
+
+
+2) Data Snapshot
+
+![img.png](images/df-redshift-data.png)
+
+
+3) Traffic on website 
+
+![img.png](images/traffic-website-users.png)
+
+Observation - It can be generalized that the traffic seems to be increasing around end of the week days (starting from Thu,Fri) 
+              and post that we see a dip during the weekdays in the site traffic. Most interesting aspect in the traffic distribution is
+              around 12/july (second week) when we see a sudden dip in site traffic which needs to be investigated further.
+
+
+4) Eligible Search Patterns
+
+```
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set(rc={'figure.figsize':(11.7,8.27)})
+ax = sns.lineplot(x="day", y="num_searches",
+             data=df)
+ax.lines[0].set_linestyle("--")
+
+plt.title('Total number of searches on each day')
+plt.show()
+
+```
+
+![img.png](images/search-distribution.png)
+
+
+Observation - Around second week of july we see a dip in number of searches which is coherent with the findings in the user
+              distribution graph.Also can see a spike in number of searches on - 5,17,21 July.
+
+
+
+5) Compare type of searches on the platform - what kind of properties are customers more interested in
+
+
+```
+ax = df[['num_rental_searches', 
+         'num_sale_searches', 
+         'num_none_searches']].plot(figsize=(12, 8), fontsize=12, linewidth=2, linestyle='--')
+ax.set_xlabel('day', fontsize=16)
+ax.set_ylabel('Valid Searches', fontsize=16)
+ax.set_title('Types of searches every day')
+ax.legend(fontsize=10)
+plt.show()
+```
+
+![img.png](images/type-of-search.png)
+
+
+
+Observation - From the distribution can infer that Rental searches are more engaging on the platform and attracting more users
+              Also can infer that users are specific on the search type filter i.e choosing either 'Sale' Or 'Rent' on the search settings 
+              this can be inferred from 'none-type' search distribution on the graph
