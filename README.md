@@ -153,30 +153,32 @@ Next, create the following connections:
 **Destination S3 datasets and Redshift Table**:
 After each successful run of the DAG, two files are stored in the destination bucket:
 * `s3://user-incoming-bucket/user-data-clean/session_user_data<yyyymmdd>.csv`: Contains a dataset with the following fields:
-    * user_id: Unique id of the user *
-    * user_data: User Search Data *
-    * valid_search_data: Eligible Search Data *
-    * num_eligible_searches: Number of Eligible searches *
-    * avg_listings: Avg number of listings for that user *
-    * type_of_search: Did the user search for: *
-        * num_rental_search_type *
-        * num_sale_search_type *
-        * none_search_type *
+    * user_id: Unique id of the user 
+    * user_data: User Search Data 
+    * valid_search_data: Eligible Search Data 
+    * num_eligible_searches: Number of Eligible searches 
+    * avg_listings: Avg number of listings for that user 
+    * type_of_search: Did the user search for: 
+        * num_rental_search_type 
+        * num_sale_search_type 
+        * none_search_type 
 
 
 
-##Sample data snapshot from Jupyter notebook
+Sample data snapshot from Jupyter notebook
 
 ![img.png](./images/destination_s3_data.png)
 
-##Destination S3 files
+Destination S3 files
 
 ![img.png](./images/s3-destination-files.png)
+
 
 
 **Amazon Redshift table:**
 
 Below shows snapshot of redshift table `search_stats` after completion of data pipeline
+
 
 ![img.png](./images/redshift-table-data.png)
 
