@@ -13,13 +13,13 @@ and number of clicks is atleast `3.
  Information on each user's searches and engagement is stored in `user_data` column. 
  Below is sample data snapshot taken from a Jupyter notebook 
 
-![img.png](raw_data_users_session.png)
+![img.png](./images/raw_data_users_session.png)
 
 
 **Data Description**: The source data resides in S3 `s3://user-incoming-bucket` for each day 
 from **2021-07-01** till **2021-07-25**, as shown below:
 
-![img.png](aws_s3_incoming_bucket.png)
+![img.png](./images/aws_s3_incoming_bucket.png)
 
 All this data needs to be processed using a data pipeline to answer the following **business questions:**
 1. Produce a list of **unique "valid searches"**.
@@ -38,7 +38,7 @@ The design of the pipeline can be summarized as:
 - Calculate summary statistics and load the summary stats into **Amazon Redshift**.
 
 > Figure showns the structure of the data pipeline as represented by a Airflow DAG
-![img.png](airflow_graph_view.png)
+![img.png](./images/airflow_graph_view.png)
 
 **Design Goals**:
 As the data is stored in S3, we need a way to incrementally load each file, then process it and store that particular day's results back into S3. Doing so will allow us to perform further analysis later-on, on the cleaned dataset. 
@@ -60,7 +60,7 @@ By default, airflow comes with some simple built-in operators like `PythonOperat
 Here's the directory organization:
 
 
-![img.png](directory-structure.png)
+![img.png](./images/directory-structure.png)
 
 
 
@@ -77,7 +77,7 @@ Here's the directory organization:
   
   Snapshot of airflow container running on my local machine 
 
-  ![img.png](docker-airflow-container.png)
+  ![img.png](./images/docker-airflow-container.png)
 
 - You have AWS credentials for AWS (user and access key-id ) to connect to S3 and Redshift
 - You need to have AWS Redshift cluster setup, we would be using the Endpoint of this 
@@ -85,7 +85,7 @@ Here's the directory organization:
   and security-group settings allow your local machine to be able to communicate to the cluster
   by whitelisting your IP.
  
-  ![img.png](aws-redshift.png) 
+  ![img.png](./images/aws-redshift.png) 
 
 
 **Step 1:** Once the requirements are met, launch Airflow on your laptop by running: `docker-compose up` from the location where `docker-compose.yml` is located.
@@ -122,21 +122,21 @@ airflow-webserver_1  | 172.18.0.1 - - [25/Jul/2021:05:31:01 +0000] "GET /static/
 **Step 2:**: Check Airflow UI 
 Login to Airflow Console: http://localhost:8080/admin 
 
-![img.png](airflow-login.png)
+![img.png](./images/airflow-login.png)
 
 
 
 **Step 3:**: Check Airflow UI 
 Login to Airflow Console: http://localhost:8080/admin , and create the below three variables
 
-![img.png](airflow-variables.png)
+![img.png](./images/airflow-variables.png)
 
 Next, create the following connections:
 - *aws_conn*: (Type: Amazon Web Services, Login:<user-id>, Password:<user-access-key>)
 - *redshift*: (Type: Postgress, Host:<Redshift-End-Point>, Schema:<Schema>, Login:<user-id>, 
   Password: <Password>, Port: <Port>)
 
-![img.png](airflow-connections.png)
+![img.png](./images/airflow-connections.png)
 
 
 **Step 3**: Create the following connections
@@ -148,7 +148,7 @@ Next, create the following connections:
 
 
 > Data pipeline execution starting on **2021-07-02** and ending on **2021-07-24**.
-![img.png](data-pipeline-execution.png)
+![img.png](./images/data-pipeline-execution.png)
 
 
 **Destination S3 datasets and Redshift Table**:
@@ -168,15 +168,15 @@ After each successful run of the DAG, two files are stored in the destination bu
 
 ##Sample data snapshot from Jupyter notebook
 
-![img.png](destination_s3_data.png)
+![img.png](./images/destination_s3_data.png)
 
 ##Destination S3 files
 
-![img.png](s3-destination-files.png)
+![img.png](./images/s3-destination-files.png)
 
 
 **Amazon Redshift table:**
 
 Below shows snapshot of redshift table `search_stats` after completion of data pipeline
 
-![img.png](redshift-table-data.png)
+![img.png](./images/redshift-table-data.png)
