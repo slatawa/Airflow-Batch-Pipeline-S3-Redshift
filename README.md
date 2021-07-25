@@ -13,7 +13,7 @@ and number of clicks is atleast `3.
  Information on each user's searches and engagement is stored in `user_data` column. 
  Below is sample data snapshot taken from a Jupyter notebook 
 
-![img.png](raw_data_users_session.png)![rawdata](images/rawdata.png)
+![img.png](raw_data_users_session.png)
 
 
 **Data Description**: The source data resides in S3 `s3://user-incoming-bucket` for each day 
@@ -118,12 +118,17 @@ airflow-webserver_1  | 172.18.0.1 - - [25/Jul/2021:05:31:01 +0000] "GET /static/
 ```
 
 
+
 **Step 2:**: Check Airflow UI 
 Login to Airflow Console: http://localhost:8080/admin 
+
 ![img.png](airflow-login.png)
+
+
 
 **Step 3:**: Check Airflow UI 
 Login to Airflow Console: http://localhost:8080/admin , and create the below three variables
+
 ![img.png](airflow-variables.png)
 
 Next, create the following connections:
@@ -138,8 +143,13 @@ Next, create the following connections:
 
 **Step 4**: Launch the jupyter notebook provided here: [notebook](https://github.com/shravan-kuchkula/batch-etl/blob/16986034763616f330d27febf22c92efa007d1db/Report/Report_Shravan_Kuchkula.ipynb) . Navigate to "Answering Business questions using data" section. Run the code cells.
 
+
+** Pipeline Execution
+
+
 > Data pipeline execution starting on **2021-07-02** and ending on **2021-07-24**.
 ![img.png](data-pipeline-execution.png)
+
 
 **Destination S3 datasets and Redshift Table**:
 After each successful run of the DAG, two files are stored in the destination bucket:
@@ -154,11 +164,13 @@ After each successful run of the DAG, two files are stored in the destination bu
         * num_sale_search_type
         * none_search_type
 
-**Sample data snapshot from Jupyter notebook
+
+
+##Sample data snapshot from Jupyter notebook
 
 ![img.png](destination_s3_data.png)
 
-**Destination S3 files
+##Destination S3 files
 
 ![img.png](s3-destination-files.png)
 
@@ -168,5 +180,3 @@ After each successful run of the DAG, two files are stored in the destination bu
 Below shows snapshot of redshift table `search_stats` after completion of data pipeline
 
 ![img.png](redshift-table-data.png)
-
-![redshift](images/redshift.png)
